@@ -1,0 +1,57 @@
+fns.txt
+*.dSYM
+*_test
+/v
+/vprod
+/v.c
+/v.*.c
+/v.c.out
+/tools/performance_compare
+/tools/performance_compare.exe
+/tools/vrepl
+/tools/vtest
+/tools/vtest-compiler
+/tools/vup
+/tools/vpm
+/tools/vcreate
+/tools/vbuild-examples
+/tools/vbuild-tools
+/tools/vbuild-vbinaries
+/v_g
+/v_cg
+/v_prod
+/v_prod_cg
+/v_prod_g
+*.exe
+*.o
+.*.c
+*.tmp.c
+vjs
+*.obj
+*.exp
+*.ilk
+*.pdb
+
+#
+# macOS.gitignore
+#
+# General
+.DS_Store
+
+# Thumbnails
+._*
+.vrepl_temp.v
+a.out
+vlib/os/bare/bare_example_linux
+
+info.log
+
+# vscode
+.vscode/
+
+# vim
+
+**.swo
+**.swp
+**.swn
+
