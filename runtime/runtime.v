@@ -80,7 +80,7 @@ fn main () {
     data := lambdaRuntime.getNextEventData()
     eventPayload := LambdaRuntime.getEventPayload()
     // TODO: figure out how to dynamically pull in handler
-
+    handlerResponse := handler.
     /*
     //Check if there was an error that runtime detected with the next event data
 	if(isset($data["error"]) && $data["error"]) {
