@@ -4,15 +4,16 @@ GET := 'GET'
 POST := 'POST'
 
 struct LambdaRuntime {
-  mut url string
-  mut functionCodePath string
-  mut response string
-  // TODO: investigate struct for event data
-  mut rawEventData Response
-  // TODO: investigate struct for event payload
-  mut eventPayload string
-  // TODO: investigate fn for handler
-  mut handler string
+  mut:
+    url string
+    functionCodePath string
+    response string
+    // TODO: investigate struct for event data
+    rawEventData Response
+    // TODO: investigate struct for event payload
+    eventPayload string
+    // TODO: investigate fn for handler
+    handler string
 }
 
 fn (rt LambdaRuntime) resetResponse () {
@@ -31,7 +32,7 @@ fn (rt LambdaRuntime) flushResponse () {
 }
 
 fn (rt LambdaRuntime) getNextEventData () ?Response {
-  rt.rawEventData = http.get('/2018-06-01/runtime/invocation/next')
+  rawEventData = http.get('/2018-06-01/runtime/invocation/next')
   eventData := rt.rawEventData.text
   requestId := rt.rawEventData.header.data['lambda-runtime-aws-request-id'][0]
   if (!requestId) {
@@ -39,13 +40,12 @@ fn (rt LambdaRuntime) getNextEventData () ?Response {
       'MissingEventData',
       'Event data is absent. EventData: $eventData'
     )
-    return {
-      error: true,
-    }
+    return error('Event data is absent')
   }
+  rt.rawEventData = rawEventData
   rt.requestId = requestId
   rt.eventPayload = eventData
-  return rt.rawEventData
+  return rawEventData
 }
 
 fn (rt LambdaRuntime) reportError (errorType string, errorMessage string) {
@@ -65,4 +65,65 @@ fn (rt LambdaRuntime) reportInitError (errorType string, errorMessage string) {
   }
   errorPayload := ""
   http.post('/2018-06-01/runtime/init/error', errorPayload)
+}
+
+fn main () {
+  runtimeApi := $env('AWS_LAMBDA_RUNTIME_API')
+  functionCodePath := $env('LAMBDA_TASK_ROOT')
+  handler := $env('_HANDLER')
+
+  lambdaRuntime := LambdaRuntime{
+    url: 'http://$runtimeApi',
+    functionCodePath,
+    handler,
+  }
+
+  handlerParts := handlr.split('.')
+  handlerFile := handlerParts[0]
+  handlerFunction := handlerParts[1]
+
+  while(true) {
+    data := lambdaRuntime.getNextEventData()
+    eventPayload := LambdaRuntime.getEventPayload()
+    // TODO: figure out how to dynamically pull in handler
+
+    /*
+    //Check if there was an error that runtime detected with the next event data
+	if(isset($data["error"]) && $data["error"]) {
+		continue;
+	}
+
+	//Process the events
+	$eventPayload = $lambdaRuntime->getEventPayload();
+	//Handler is of format Filename.function
+	//Capture stdout
+	ob_start();
+	//try catch to capture any exceptions that may get thrown by the handler
+	try{
+		//Execute handler
+		$functionReturn = $handlerFunction($eventPayload);
+		$out = ob_get_clean();
+		$lambdaRuntime->addToResponse($functionReturn);
+		$lambdaRuntime->addToResponse($out);
+		//Report result
+		$lambdaRuntime->flushResponse();
+	} catch (Exception $e) {
+		//capture the output generated till the error is caught
+		$out = ob_get_clean();
+		//get the exception message
+		$message = $e->getMessage();
+		//construct the error message
+		$lambdaRuntime->addToResponse(" exceptionMessage: $message");
+		if($out !== "") {
+			$lambdaRuntime->addToResponse(" stdout: $out");
+		}
+		//get the exception type
+		$errorType = get_class($e);
+		//report error to lambda
+		$lambdaRuntime->reportError($errorType, trim($lambdaRuntime->getResponse()));
+
+		//reset the response string
+		$lambdaRuntime->resetResponse();
+    */
+  }
 }
