@@ -1,8 +1,5 @@
 import http
 
-GET := 'GET'
-POST := 'POST'
-
 struct LambdaRuntime {
   mut:
     url string
