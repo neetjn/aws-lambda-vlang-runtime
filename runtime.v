@@ -8,11 +8,8 @@ struct LambdaRuntime {
     url string
     functionCodePath string
     response string
-    // TODO: investigate struct for event data
     rawEventData Response
-    // TODO: investigate struct for event payload
     eventPayload string
-    // TODO: investigate fn for handler
     handler string
 }
 
@@ -78,7 +75,7 @@ fn main () {
     handler,
   }
 
-  handlerParts := handlr.split('.')
+  handlerParts := handler.split('.')
   handlerFile := handlerParts[0]
   handlerFunction := handlerParts[1]
 
